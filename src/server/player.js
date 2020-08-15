@@ -7,7 +7,8 @@ class Player extends ObjectClass {
     super(id);
     this.username = username;
     this.score = 0;
-    this.villages = [firstVillage];
+    let secondVillage = new Village(2, firstVillage.x + 100, firstVillage.y + 100, 10)
+    this.villages = [firstVillage, secondVillage];
   }
 
   update(dt) {

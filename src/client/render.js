@@ -11,6 +11,8 @@ const { VILLAGE_BASE_POINTS, VILLAGE_MAX_HP, VILLAGE_RADIUS, MAP_SIZE } = Consta
 // Get the canvas graphics context
 const canvas = document.getElementById('game-canvas');
 const context = canvas.getContext('2d');
+var viewX = MAP_SIZE / 2;
+var viewY = MAP_SIZE / 2;
 setCanvasDimensions();
 
 function setCanvasDimensions() {
@@ -18,7 +20,7 @@ function setCanvasDimensions() {
   // 800 in-game units of width.
   const scaleRatio = Math.max(1, 800 / window.innerWidth);
   canvas.width = scaleRatio * window.innerWidth;
-  canvas.height = scaleRatio * window.innerHeight;
+  canvas.height = scaleRatio * window.innerHeight;  
 }
 
 window.addEventListener('resize', debounce(40, setCanvasDimensions));
@@ -39,15 +41,15 @@ function render() {
   }
 
   // Draw background
-  renderBackground(me.villages[0].x, me.villages[0].y);
+  renderBackground(viewX, viewY);
 
   // Draw boundaries
-context.strokeStyle = 'black';
-context.lineWidth = 1;
-context.strokeRect(canvas.width / 2 - me.villages[0].x, canvas.height / 2 - me.villages[0].y, MAP_SIZE, MAP_SIZE);
+  context.strokeStyle = 'black';
+  context.lineWidth = 1;
+  context.strokeRect(canvas.width / 2 - viewX, canvas.height / 2 - viewY, MAP_SIZE, MAP_SIZE);
 
-renderPlayer(me, me);
-others.forEach(renderPlayer.bind(null, me));  
+  renderPlayer(me, me);
+  others.forEach(renderPlayer.bind(null, me));  
 }
 
 function renderBackground(x, y) {
@@ -61,8 +63,8 @@ function renderBackground(x, y) {
     backgroundY,
     MAP_SIZE / 2,
   );
-  backgroundGradient.addColorStop(0, 'grey');
-  backgroundGradient.addColorStop(1, 'brown');
+  backgroundGradient.addColorStop(0, 'white');
+  backgroundGradient.addColorStop(1, 'lightgrey');
   context.fillStyle = backgroundGradient;
   context.fillRect(0, 0, canvas.width, canvas.height);
 }
@@ -72,8 +74,8 @@ function renderPlayer(me, player) {
   // Render villages
   for(var i = 0; i < player.villages.length; i++){
     var currentVillage = player.villages[i];
-    const canvasX = canvas.width / 2 + currentVillage.x - me.villages[i].x;
-    const canvasY = canvas.height / 2 + currentVillage.y - me.villages[i].y;
+    const canvasX = canvas.width / 2 + currentVillage.x - viewX;
+    const canvasY = canvas.height / 2 + currentVillage.y - viewY;
 
     // Draw village
     context.save();
@@ -87,33 +89,16 @@ function renderPlayer(me, player) {
     );
     context.restore();
 
-    // Draw health bar
-    context.fillStyle = 'black';
-    context.fillRect(
-      canvasX - VILLAGE_RADIUS,
-      canvasY + VILLAGE_RADIUS + 8,
-      VILLAGE_RADIUS * 2,
-      2,
-    );
-    context.fillStyle = 'red';
-    context.fillRect(
-      canvasX - VILLAGE_RADIUS + VILLAGE_RADIUS * 2 * currentVillage.points / VILLAGE_MAX_HP,
-      canvasY + VILLAGE_RADIUS + 8,
-      VILLAGE_RADIUS * 2 * (1 - currentVillage.points / VILLAGE_MAX_HP),
-      2,
-    );
+    // Draw village points
+    context.font = "16px Comic Sans MS";
+    context.fillStyle = "white";
+    context.textAlign = "center";
+    context.fillText(currentVillage.points, canvasX, canvasY + (VILLAGE_RADIUS / 2) - 4); 
+    // Draw player name
+    context.font = "30px Comic Sans MS";
+    context.fillStyle = "black";
+    context.fillText(player.username, canvasX, canvasY - (VILLAGE_RADIUS * 2) - 8); 
   }
-}
-
-function renderBullet(me, bullet) {
-  const { x, y } = bullet;
-  context.drawImage(
-    getAsset('bullet.svg'),
-    canvas.width / 2 + x - me.x - BULLET_RADIUS,
-    canvas.height / 2 + y - me.y - BULLET_RADIUS,
-    BULLET_RADIUS * 2,
-    BULLET_RADIUS * 2,
-  );
 }
 
 function renderMainMenu() {
@@ -121,6 +106,13 @@ function renderMainMenu() {
   const x = MAP_SIZE / 2 + 800 * Math.cos(t);
   const y = MAP_SIZE / 2 + 800 * Math.sin(t);
   renderBackground(x, y);
+}
+
+export function updateClientPosition(x, y) {
+  viewX -= x;
+  viewY -= y;
+  viewX = Math.max(0, Math.min(Constants.MAP_SIZE, viewX));
+  viewY = Math.max(0, Math.min(Constants.MAP_SIZE, viewY));
 }
 
 let renderInterval = setInterval(renderMainMenu, 1000 / 60);
