@@ -1,5 +1,5 @@
 class Object {
-  constructor(id, x, y) {
+  constructor(id) {
     this.id = id;
     // this.x = x;
     // this.y = y;

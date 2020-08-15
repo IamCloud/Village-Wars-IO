@@ -23,6 +23,9 @@ class Game {
 
   removePlayer(socket) {
     delete this.sockets[socket.id];
+    for(var i = 0; i < this.players[socket.id].villages.length; i++) {
+      delete this.players[socket.id].villages[i];
+    }
     delete this.players[socket.id];
   }
 
@@ -98,14 +101,14 @@ class Game {
   }
 
   createUpdate(player, leaderboard) {
-    const nearbyPlayers = Object.values(this.players).filter(
-      p => p !== player && p.distanceTo(player) <= Constants.MAP_SIZE / 2,
+    const otherPlayers = Object.values(this.players).filter(
+      p => p !== player
     );
 
     return {
       t: Date.now(),
       me: player.serializeForUpdate(),
-      others: nearbyPlayers.map(p => p.serializeForUpdate()),
+      others: otherPlayers.map(p => p.serializeForUpdate()),
       villages: player.villages.map(v => v.serializeForUpdate()),
       leaderboard,
     };

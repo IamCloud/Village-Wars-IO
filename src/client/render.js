@@ -29,19 +29,25 @@ function render() {
     return;
   }
 
-  // Draw background
-  if (Array.isArray(me.villages)) {
-    renderBackground(me.villages[0].x, me.villages[0].y);
-
-      // Draw boundaries
-    context.strokeStyle = 'black';
-    context.lineWidth = 1;
-    context.strokeRect(canvas.width / 2 - me.villages[0].x, canvas.height / 2 - me.villages[0].y, MAP_SIZE, MAP_SIZE);
-
-    renderPlayer(me, me);
-    others.forEach(renderPlayer.bind(null, me));
+  if (!Array.isArray(me.villages)) {
+    me.villages = JSON.parse(me.villages);
   }
-  
+  for (var i = 0; i < others.length; i++) {
+    if (!Array.isArray(others[i].villages)) {
+      others[i].villages = JSON.parse(others[i].villages);
+    }
+  }
+
+  // Draw background
+  renderBackground(me.villages[0].x, me.villages[0].y);
+
+  // Draw boundaries
+context.strokeStyle = 'black';
+context.lineWidth = 1;
+context.strokeRect(canvas.width / 2 - me.villages[0].x, canvas.height / 2 - me.villages[0].y, MAP_SIZE, MAP_SIZE);
+
+renderPlayer(me, me);
+others.forEach(renderPlayer.bind(null, me));  
 }
 
 function renderBackground(x, y) {
