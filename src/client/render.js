@@ -6,7 +6,7 @@ import { getCurrentState } from './state';
 
 const Constants = require('../shared/constants');
 
-const { PLAYER_RADIUS, PLAYER_MAX_HP, BULLET_RADIUS, MAP_SIZE } = Constants;
+const { VILLAGE_BASE_POINTS, VILLAGE_MAX_HP, VILLAGE_RADIUS, MAP_SIZE } = Constants;
 
 // Get the canvas graphics context
 const canvas = document.getElementById('game-canvas');
@@ -24,25 +24,24 @@ function setCanvasDimensions() {
 window.addEventListener('resize', debounce(40, setCanvasDimensions));
 
 function render() {
-  const { me, others, bullets } = getCurrentState();
+  const { me, others } = getCurrentState(); //Fix getCurrentState not ok when gameupdate
   if (!me) {
     return;
   }
 
   // Draw background
-  renderBackground(me.x, me.y);
+  if (Array.isArray(me.villages)) {
+    renderBackground(me.villages[0].x, me.villages[0].y);
 
-  // Draw boundaries
-  context.strokeStyle = 'black';
-  context.lineWidth = 1;
-  context.strokeRect(canvas.width / 2 - me.x, canvas.height / 2 - me.y, MAP_SIZE, MAP_SIZE);
+      // Draw boundaries
+    context.strokeStyle = 'black';
+    context.lineWidth = 1;
+    context.strokeRect(canvas.width / 2 - me.villages[0].x, canvas.height / 2 - me.villages[0].y, MAP_SIZE, MAP_SIZE);
 
-  // Draw all bullets
-  bullets.forEach(renderBullet.bind(null, me));
-
-  // Draw all players
-  renderPlayer(me, me);
-  others.forEach(renderPlayer.bind(null, me));
+    renderPlayer(me, me);
+    others.forEach(renderPlayer.bind(null, me));
+  }
+  
 }
 
 function renderBackground(x, y) {
@@ -56,46 +55,48 @@ function renderBackground(x, y) {
     backgroundY,
     MAP_SIZE / 2,
   );
-  backgroundGradient.addColorStop(0, 'black');
-  backgroundGradient.addColorStop(1, 'gray');
+  backgroundGradient.addColorStop(0, 'grey');
+  backgroundGradient.addColorStop(1, 'brown');
   context.fillStyle = backgroundGradient;
   context.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-// Renders a ship at the given coordinates
+// Renders a village at a given location
 function renderPlayer(me, player) {
-  const { x, y, direction } = player;
-  const canvasX = canvas.width / 2 + x - me.x;
-  const canvasY = canvas.height / 2 + y - me.y;
+  // Render villages
+  for(var i = 0; i < player.villages.length; i++){
+    var currentVillage = player.villages[i];
+    const canvasX = canvas.width / 2 + currentVillage.x - me.villages[i].x;
+    const canvasY = canvas.height / 2 + currentVillage.y - me.villages[i].y;
 
-  // Draw ship
-  context.save();
-  context.translate(canvasX, canvasY);
-  context.rotate(direction);
-  context.drawImage(
-    getAsset('ship.svg'),
-    -PLAYER_RADIUS,
-    -PLAYER_RADIUS,
-    PLAYER_RADIUS * 2,
-    PLAYER_RADIUS * 2,
-  );
-  context.restore();
+    // Draw village
+    context.save();
+    context.translate(canvasX, canvasY);
+    context.drawImage(
+      getAsset('ship.svg'),
+      -VILLAGE_RADIUS,
+      -VILLAGE_RADIUS,
+      VILLAGE_RADIUS * 2,
+      VILLAGE_RADIUS * 2,
+    );
+    context.restore();
 
-  // Draw health bar
-  context.fillStyle = 'white';
-  context.fillRect(
-    canvasX - PLAYER_RADIUS,
-    canvasY + PLAYER_RADIUS + 8,
-    PLAYER_RADIUS * 2,
-    2,
-  );
-  context.fillStyle = 'red';
-  context.fillRect(
-    canvasX - PLAYER_RADIUS + PLAYER_RADIUS * 2 * player.hp / PLAYER_MAX_HP,
-    canvasY + PLAYER_RADIUS + 8,
-    PLAYER_RADIUS * 2 * (1 - player.hp / PLAYER_MAX_HP),
-    2,
-  );
+    // Draw health bar
+    context.fillStyle = 'black';
+    context.fillRect(
+      canvasX - VILLAGE_RADIUS,
+      canvasY + VILLAGE_RADIUS + 8,
+      VILLAGE_RADIUS * 2,
+      2,
+    );
+    context.fillStyle = 'red';
+    context.fillRect(
+      canvasX - VILLAGE_RADIUS + VILLAGE_RADIUS * 2 * currentVillage.points / VILLAGE_MAX_HP,
+      canvasY + VILLAGE_RADIUS + 8,
+      VILLAGE_RADIUS * 2 * (1 - currentVillage.points / VILLAGE_MAX_HP),
+      2,
+    );
+  }
 }
 
 function renderBullet(me, bullet) {
