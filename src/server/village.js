@@ -2,11 +2,12 @@ const ObjectClass = require('./object');
 const Constants = require('../shared/constants');
 
 class Village extends ObjectClass {
-  constructor(id, x, y, points) {
+  constructor(id, x, y) {
     super(id);
     this.x = x;
     this.y = y;
-    this.points = points;
+    this.ressources = Constants.VILLAGE_BASE_RESSOURCES;
+    this.menAtArms = Constants.VILLAGE_BASE_MEN;
   }
 
   update(dt) {
@@ -15,16 +16,13 @@ class Village extends ObjectClass {
     return null;
   }
 
-  incrementPoint() {
-    this.points++;
-  }
-
   serializeForUpdate() {
     return {
       ...(super.serializeForUpdate()),
       x: this.x,
       y: this.y,
-      points: this.points
+      ressources: this.ressources,
+      menAtArms: this.menAtArms
     };
   }
 }

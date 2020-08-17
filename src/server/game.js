@@ -18,20 +18,17 @@ class Game {
     // Generate a position to start this player at.
     const x = Constants.MAP_SIZE * (0.25 + Math.random() * 0.5);
     const y = Constants.MAP_SIZE * (0.25 + Math.random() * 0.5);
-    this.players[socket.id] = new Player(socket.id, username, new Village(1, x, y, Constants.VILLAGE_BASE_POINTS));
+    this.players[socket.id] = new Player(socket.id, username, new Village(1, x, y));
   }
 
   removePlayer(socket) {
     delete this.sockets[socket.id];
-    for(var i = 0; i < this.players[socket.id].villages.length; i++) {
-      delete this.players[socket.id].villages[i];
-    }
     delete this.players[socket.id];
   }
 
   handleInput(socket, addedPoints) {
     if (this.players[socket.id]) {
-       this.players[socket.id].villages[0].points += addedPoints;
+       this.players[socket.id].villages[0].ressources += addedPoints;
      }
   }
 
@@ -52,13 +49,10 @@ class Game {
     // this.bullets = this.bullets.filter(bullet => !bulletsToRemove.includes(bullet));
 
     // Update each player
-    // Object.keys(this.sockets).forEach(playerID => {
-    //   const player = this.players[playerID];
-    //   const newBullet = player.update(dt);
-    //   if (newBullet) {
-    //     this.bullets.push(newBullet);
-    //   }
-    // });
+    Object.keys(this.sockets).forEach(playerID => {
+      const player = this.players[playerID];
+      player.update(dt);
+    });
 
     // Apply collisions, give players score for hitting bullets
     // const destroyedBullets = applyCollisions(Object.values(this.players), this.bullets);
@@ -68,7 +62,7 @@ class Game {
     //   }
     // });
     //this.bullets = this.bullets.filter(bullet => !destroyedBullets.includes(bullet));
-    
+
     // Check if any players are dead
     Object.keys(this.sockets).forEach(playerID => {
       const socket = this.sockets[playerID];
@@ -97,7 +91,7 @@ class Game {
     return Object.values(this.players)
       .sort((p1, p2) => p2.score - p1.score)
       .slice(0, 5)
-      .map(p => ({ username: p.username, score: Math.round(p.score) }));
+      .map(p => ({ username: p.username, score: Math.round(p.villages.length) }));
   }
 
   createUpdate(player, leaderboard) {

@@ -11,14 +11,18 @@ export function updateVillageList(data) {
     let tr = document.createElement("tr");
     let td1 = document.createElement("td");
     let td2 = document.createElement("td");
+    let td3 = document.createElement("td");
 
     let text1 = document.createTextNode(data[i].id);
-    let text2 = document.createTextNode(data[i].points);
+    let text2 = document.createTextNode(data[i].ressources);
+    let text3 = document.createTextNode(data[i].menAtArms);
     
     td1.appendChild(text1);
     td2.appendChild(text2);
+    td3.appendChild(text3);
     tr.appendChild(td1);
     tr.appendChild(td2);
+    tr.appendChild(td3);
     newTbody.appendChild(tr);
   }
   villageListTable.replaceChild(newTbody, villageListTable.querySelector("tbody"));

@@ -94,20 +94,22 @@ function renderPlayer(me, player) {
       VILLAGE_RADIUS * 2,
     );
     context.restore();
-
-    // Draw village points
+ 
+    // Draw player name    
+    if (me.id === player.id) {
+          // Draw village name
     context.font = "16px Comic Sans MS";
     context.fillStyle = "white";
     context.textAlign = "center";
-    context.fillText(currentVillage.points, canvasX, canvasY + (VILLAGE_RADIUS / 2) - 4); 
-    // Draw player name
-    context.font = "30px Comic Sans MS";
-    if (me.id === player.id) {
+    context.fillText(currentVillage.id, canvasX, canvasY + (VILLAGE_RADIUS / 2) - 8);
+
+      context.font = "25px Comic Sans MS";
       context.fillStyle = "green";
     } else {
+      context.font = "16px Comic Sans MS";
       context.fillStyle = "black";
     }
-    context.fillText(player.username, canvasX, canvasY - (VILLAGE_RADIUS * 2) - 4); 
+    context.fillText(player.username, canvasX, canvasY - (VILLAGE_RADIUS * 2) + 16); 
   }
 }
 

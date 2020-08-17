@@ -6,19 +6,17 @@ class Player extends ObjectClass {
   constructor(id, username, firstVillage) {
     super(id);
     this.username = username;
-    this.score = 0;
-    let secondVillage = new Village(2, firstVillage.x + 100, firstVillage.y + 100, 10)
+    let secondVillage = new Village(2, firstVillage.x + 150, firstVillage.y)
     this.villages = [firstVillage, secondVillage];
   }
 
   update(dt) {
     super.update(dt);
 
+    for (var i =0; i < this.villages.length; i++) {
+      this.villages[i].update(dt);
+    }    
     return null;
-  }
-
-  incrementPoints() {
-    this.points++;
   }
 
   isDead() {
@@ -29,7 +27,6 @@ class Player extends ObjectClass {
     return {
       ...(super.serializeForUpdate()),
       username: this.username,
-      score: this.score,
       villages: JSON.stringify(this.villages)
     };
   }
