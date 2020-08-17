@@ -33,3 +33,7 @@ export const connect = onGameOver => (
 export const play = username => {
   socket.emit(Constants.MSG_TYPES.JOIN_GAME, username);
 };
+
+export const incrementVillagePoints = addedPoints => {
+  socket.emit(Constants.MSG_TYPES.INPUT, addedPoints);
+};

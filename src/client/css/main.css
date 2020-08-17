@@ -92,6 +92,25 @@ button:focus {
   padding: 2px 5px;
 }
 
+#villagelist {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(255, 255, 255, 0.5);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+#villagelist th {
+  text-align: center;
+  padding: 2px 5px;
+}
+
+#villagelist td {
+  text-align: center;
+  padding: 2px 5px;
+}
+
 #disconnect-modal {
   position: fixed;
   top: 0;

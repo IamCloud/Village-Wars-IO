@@ -1,18 +1,19 @@
 // Learn more about this file at:
 // https://victorzhou.com/blog/build-an-io-game-part-1/#6-client-input-%EF%B8%8F
 import { updateClientPosition } from './render';
+import { incrementVillagePoints } from './networking';
 
-function onMouseInput(e) {
-    handleInput(e.clientX, e.clientY);
+function onMouseClick(e) {
+    handleClick(e.clientX, e.clientY);
 }
 
-function onTouchInput(e) {
+function onTouchClick(e) {
   const touch = e.touches[0];
   handleInput(touch.clientX, touch.clientY);
 }
 
-function handleInput(x, y) {
-  updateClientPosition(x, y);
+function handleClick(x, y) {
+  incrementVillagePoints(1);
 }
 
 var isDragging = false;
@@ -44,21 +45,49 @@ function mouseMove(e) {
   }
 }
 
+function touchStart(e) {
+  isDragging = true;
+  const touch = e.touches[0];
+  startX = touch.clientX;
+  startY = touch.clientY;
+}
+
+function touchEnd(e) {
+  isDragging = false;
+  startX = 0;
+  startY = 0;
+}
+
+function touchMove(e) {
+  if (isDragging) {
+    const touch = e.touches[0];
+    updateClientPosition(touch.clientX - startX, touch.clientY - startY);
+    startX = touch.clientX;
+    startY = touch.clientY;
+  }
+}
+
 
 export function startCapturingInput() {
+  window.addEventListener('click', onMouseClick)
   window.addEventListener('mousedown', mouseDown);
   window.addEventListener('mouseup', mouseUp);
   window.addEventListener('mousemove', mouseMove);
   window.addEventListener('mouseout', mouseOut);
-  window.addEventListener('touchstart', onTouchInput);
-  window.addEventListener('touchmove', onTouchInput);
+
+  window.addEventListener('touchstart', touchStart);
+  window.addEventListener('touchend', touchEnd);
+  window.addEventListener('touchmove', touchMove);
 }
 
 export function stopCapturingInput() {
+  window.removeEventListener('click', onMouseClick)
   window.removeEventListener('mousedown', mouseDown);
   window.removeEventListener('mouseup', mouseUp);
   window.removeEventListener('mousemove', mouseMove);
   window.removeEventListener('mouseout', mouseOut);
-  window.removeEventListener('touchstart', onTouchInput);
-  window.removeEventListener('touchmove', onTouchInput);
+
+  window.removeEventListener('touchstart', touchStart);
+  window.removeEventListener('touchend', touchEnd);
+  window.removeEventListener('touchmove', touchMove);
 }

@@ -11,8 +11,8 @@ const { VILLAGE_BASE_POINTS, VILLAGE_MAX_HP, VILLAGE_RADIUS, MAP_SIZE } = Consta
 // Get the canvas graphics context
 const canvas = document.getElementById('game-canvas');
 const context = canvas.getContext('2d');
-var viewX = MAP_SIZE / 2;
-var viewY = MAP_SIZE / 2;
+var viewX = -1;
+var viewY = -1;
 setCanvasDimensions();
 
 function setCanvasDimensions() {
@@ -34,6 +34,12 @@ function render() {
   if (!Array.isArray(me.villages)) {
     me.villages = JSON.parse(me.villages);
   }
+  //Set initial view X and Y
+  if (viewX === -1) {
+    viewX = me.villages[0].x;
+    viewY = me.villages[0].y;
+  }
+
   for (var i = 0; i < others.length; i++) {
     if (!Array.isArray(others[i].villages)) {
       others[i].villages = JSON.parse(others[i].villages);
@@ -69,7 +75,7 @@ function renderBackground(x, y) {
   context.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-// Renders a village at a given location
+// Renders villages of a player
 function renderPlayer(me, player) {
   // Render villages
   for(var i = 0; i < player.villages.length; i++){
@@ -96,8 +102,12 @@ function renderPlayer(me, player) {
     context.fillText(currentVillage.points, canvasX, canvasY + (VILLAGE_RADIUS / 2) - 4); 
     // Draw player name
     context.font = "30px Comic Sans MS";
-    context.fillStyle = "black";
-    context.fillText(player.username, canvasX, canvasY - (VILLAGE_RADIUS * 2) - 8); 
+    if (me.id === player.id) {
+      context.fillStyle = "green";
+    } else {
+      context.fillStyle = "black";
+    }
+    context.fillText(player.username, canvasX, canvasY - (VILLAGE_RADIUS * 2) - 4); 
   }
 }
 

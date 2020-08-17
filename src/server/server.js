@@ -44,8 +44,8 @@ function joinGame(username) {
   game.addPlayer(this, username);
 }
 
-function handleInput(dir) {
-  game.handleInput(this, dir);
+function handleInput(addedPoints) {
+  game.handleInput(this, addedPoints);
 }
 
 function onDisconnect() {

@@ -29,10 +29,10 @@ class Game {
     delete this.players[socket.id];
   }
 
-  handleInput(socket, dir) {
-    // if (this.players[socket.id]) {
-    //   this.players[socket.id].setDirection(dir);
-    // }
+  handleInput(socket, addedPoints) {
+    if (this.players[socket.id]) {
+       this.players[socket.id].villages[0].points += addedPoints;
+     }
   }
 
   update() {
@@ -68,7 +68,7 @@ class Game {
     //   }
     // });
     //this.bullets = this.bullets.filter(bullet => !destroyedBullets.includes(bullet));
-
+    
     // Check if any players are dead
     Object.keys(this.sockets).forEach(playerID => {
       const socket = this.sockets[playerID];
